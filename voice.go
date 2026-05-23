@@ -183,8 +183,12 @@ func (v *VoiceConnection) Kill() {
 		close(v.dead)
 		go func() {
 			time.Sleep(100 * time.Millisecond) // safe
-			close(v.OpusRecv)
-			close(v.OpusSend)
+			if v.OpusRecv != nil {
+				close(v.OpusRecv)
+			}
+			if v.OpusSend != nil {
+				close(v.OpusSend)
+			}
 		}()
 	}
 
