@@ -195,6 +195,17 @@ func (v *VoiceConnection) Kill() {
 	v.log(LogInformational, "done")
 }
 
+// GetSSRCMap returns a snapshot of the current SSRC→UserID mappings.
+func (v *VoiceConnection) GetSSRCMap() map[uint32]string {
+	v.Cond.L.Lock()
+	defer v.Cond.L.Unlock()
+	result := make(map[uint32]string, len(v.ssrcToUserID))
+	for ssrc, userID := range v.ssrcToUserID {
+		result[ssrc] = userID
+	}
+	return result
+}
+
 // AddHandler adds a Handler for VoiceSpeakingUpdate events.
 func (v *VoiceConnection) AddHandler(h VoiceSpeakingUpdateHandler) {
 	v.Cond.L.Lock()
