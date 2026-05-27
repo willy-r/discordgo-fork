@@ -715,9 +715,14 @@ func (v *VoiceConnection) onEvent(ctx context.Context, binary bool, message []by
 				}
 				v.ssrcToUserID[op12.AudioSSRC] = op12.UserID
 				dave := v.dave
+				handlers := v.voiceSpeakingUpdateHandlers
 				v.Cond.L.Unlock()
 				if dave != nil {
 					dave.SetSSRC(op12.AudioSSRC, op12.UserID)
+				}
+				update := &VoiceSpeakingUpdate{UserID: op12.UserID, SSRC: int(op12.AudioSSRC)}
+				for _, h := range handlers {
+					h(v, update)
 				}
 			}
 			return
